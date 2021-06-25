@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+spec:
+  template:
+    spec:
+      containers:
+      - env:
+        - name: ELASTIC_APM_SERVER_URLS
+          value: http://apmserver-svc.msa-framework:8200
+        - name: JAVA_TOOL_OPTIONS
+          value: -javaagent:/elastic/apm/agent/elastic-apm-agent.jar
+        - name: ELASTIC_APM_APPLICATION_PACKAGES
+          value: com.skcc
+        - name: ELASTIC_APM_ENVIRONMENT
+          value: dev
+        - name: ELASTIC_APM_LOG_LEVEL
+          value: INFO
+        - name: ELASTIC_APM_SERVICE_NAME
+          value: parkingsk_parkingsk-booking
+        name: app
+        volumeMounts:
+        - mountPath: /elastic/apm/agent
+          name: elastic-apm-agent
+      initContainers:
+      - command:
+        - cp
+        - -v
+        - /usr/agent/elastic-apm-agent.jar
+        - /elastic/apm/agent
+        image: factory-registry.cloudzcp.io/msa-framework/apm-agent-java-webflux:1.16.1
+        name: elastic-java-agent
+        volumeMounts:
+        - mountPath: /elastic/apm/agent
+          name: elastic-apm-agent
+      volumes:
+      - emptyDir: {
+          }
+        name: elastic-apm-agent

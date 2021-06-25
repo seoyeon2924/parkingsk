@@ -1,0 +1,49 @@
+spring:
+  application:
+    name: parkingsk-booking
+  datasource:
+    platform: mariadb
+    # url: jdbc:mariadb://mariadb-url:3306/database
+    url: jdbc:mariadb://factory-zdb-parkingsk-maria-mariadb.factory-zdb:3306/booking
+    username: ${MARIADB_USER}
+    password: ${MARIADB_PASSWORD}
+    driver-class-name: org.mariadb.jdbc.Driver
+  kafka:
+    consumer:
+      bootstrap-servers: factory-zdb-parkingsk-stream-kafka-0.factory-zdb-parkingsk-stream-kafka-headless.factory-zdb.svc.cluster.local:9092
+      topic-name: CAPACITY
+      group-id: foo
+    #   auto-offset-reset: earliest
+    #   key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    #  value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    #  value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+    #  properties:
+    #    spring:
+    #      json:
+    #        trusted:
+    #          packages: 'com.skcc.parkingsk'
+    producer:
+      bootstrap-servers: factory-zdb-parkingsk-stream-kafka-0.factory-zdb-parkingsk-stream-kafka-headless.factory-zdb.svc.cluster.local:9092
+      topic-name: BOOKING
+      group-id: foo
+    #   key-serializer: org.apache.kafka.common.serialization.StringSerializer
+    #   value-serializer: org.apache.kafka.common.serialization.StringSerializer
+  sleuth:
+    trace-id128: true
+    enabled: true
+    http:
+      enabled: true
+    log:
+      slf4j:
+        enabled: true
+    sampler:
+      probability: 1.0    # Open Zipkin 으로 데이터를 전송하는 트랜잭션 샘플링 비율
+  zipkin:
+    base-url: http://parkingsk-zipkin:9411
+
+domain:
+  group: parkingsk
+  name: booking
+  
+  
+  

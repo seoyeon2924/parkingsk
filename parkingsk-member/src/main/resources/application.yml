@@ -1,0 +1,48 @@
+spring:
+  application:
+    name: parkingsk_member
+  profiles:
+    active: default
+  datasource:
+    url: jdbc:h2:mem:testdb # 기본H2 DB 연결 했을 때
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+#  datasource:
+#    url: jdbc:mysql://localhost:3306/member #mariadb에 test database를 만듦
+#    username: root
+#    password: 1234
+#    driver-class-name: org.mariadb.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:9092
+      topic-name: TEST
+      group-id: foo
+   #   auto-offset-reset: earliest
+    #   key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    #   value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+     bootstrap-servers: localhost:9092
+     topic-name: TEST
+     group-id: foo
+    #  key-serializer: org.apache.kafka.common.serialization.StringSerializer
+     # value-serializer: org.apache.kafka.common.serialization.StringSerializer
+server:
+  port: 8082
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+
+
+

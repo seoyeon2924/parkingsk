@@ -1,0 +1,12 @@
+- op: add
+  path: /spec/type
+  value: ClusterIP
+- op: add
+  path: /spec/sessionAffinity
+  value: None
+- op: replace
+  path: /spec/ports/0/port
+  value: 8080
+- op: replace
+  path: /spec/ports/0/targetPort
+  value: 8080

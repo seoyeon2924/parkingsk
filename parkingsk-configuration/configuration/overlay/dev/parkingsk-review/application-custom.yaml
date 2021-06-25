@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: parkingsk-review
+  datasource:
+    platform: mariadb
+    # url: jdbc:mariadb://mariadb-url:3306/database
+    url: jdbc:mariadb://factory-zdb-parkingsk-maria-mariadb.factory-zdb:3306/review
+    username: ${MARIADB_USER}
+    password: ${MARIADB_PASSWORD}
+    driver-class-name: org.mariadb.jdbc.Driver
+domain:
+  group: parkingsk
+  name: review

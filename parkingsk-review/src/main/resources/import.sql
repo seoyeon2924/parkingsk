@@ -1,0 +1,5 @@
+INSERT INTO review (contents, parking_lot_id, parking_lot_name, review_date, reviwer_id, reviewer_name, star_point) VALUES ('통로가 좁아요', 1, '판교캠퍼스', sysdate, 'momo123', '박보검','ONE');
+INSERT INTO review (contents, parking_lot_id, parking_lot_name, review_date, reviwer_id, reviewer_name, star_point) VALUES ('공간이 넓어요', 2, '정자U타워', sysdate, 'cute12', '박서준','FOUR');
+INSERT INTO review (contents, parking_lot_id, parking_lot_name, review_date, reviwer_id, reviewer_name, star_point) VALUES ('좋아요', 3, 'SKT타워', sysdate, '09292', '이제훈','FIVE');
+INSERT INTO review (contents, parking_lot_id, parking_lot_name, review_date, reviwer_id, reviewer_name, star_point) VALUES ('안내가 불친절함', 1, '판교캠퍼스', sysdate, 'hello2', '서강준','ONE');
+INSERT INTO review (contents, parking_lot_id, parking_lot_name, review_date, reviwer_id, reviewer_name, star_point) VALUES ('별로', 2, '정자U타워', sysdate, ' juju', '남주혁','ONE');

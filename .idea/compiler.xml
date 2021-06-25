@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="skparking" />
+        <module name="skparking-review" />
+        <module name="skparking-bff" />
+        <module name="parkingsk-parkinglot" />
+        <module name="parkingsk_booking" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="parkingsk-parkinglot" target="11" />
+      <module name="parkingsk_booking" target="11" />
+      <module name="skparking" target="11" />
+      <module name="skparking-bff" target="1.8" />
+      <module name="skparking-bff (1)" target="11" />
+      <module name="skparking-review" target="11" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="parkingsk-parkinglot" options="-parameters" />
+      <module name="parkingsk_booking" options="-parameters" />
+      <module name="skparking" options="-parameters" />
+      <module name="skparking-bff" options="-parameters" />
+      <module name="skparking-bff (1)" options="-parameters" />
+      <module name="skparking-review" options="-parameters" />
+    </option>
+  </component>
+</project>

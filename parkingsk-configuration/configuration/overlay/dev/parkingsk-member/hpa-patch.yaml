@@ -1,0 +1,67 @@
+spec:
+  maxReplicas: 3
+  metrics:
+  - object:
+      describedObject:
+        kind: Service
+        name: app
+      metric:
+        name: null
+      target:
+        averageValue: null
+        type: AverageValue
+        value: null
+    pods:
+      metric:
+        name: null
+      target:
+        averageValue: null
+        type: AverageValue
+    resource:
+      name: cpu
+      target:
+        averageUtilization: 80
+        averageValue: 80
+        type: Utilization
+    type: Object
+  - object:
+      describedObject:
+        kind: Service
+        name: app
+      metric:
+        name: null
+      target:
+        averageValue: null
+        type: AverageValue
+        value: null
+    pods:
+      metric:
+        name: null
+      target:
+        averageValue: null
+        type: AverageValue
+    resource:
+      name: memory
+      target:
+        averageUtilization: 80
+        averageValue: 80
+        type: Utilization
+    type: Object
+  - object:
+      describedObject:
+        kind: Service
+        name: app
+      metric:
+        name: null
+      target:
+        averageValue: null
+        type: AverageValue
+        value: null
+    pods:
+      metric:
+        name: null
+      target:
+        averageValue: null
+        type: AverageValue
+    type: Object
+  minReplicas: 1

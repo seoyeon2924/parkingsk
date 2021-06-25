@@ -1,0 +1,53 @@
+spring:
+  redis:
+    port: 6379
+    # host: redis-url
+    host: zdb-managed-asrds-redis-master.zdb-managed
+    password: ${REDIS_PASSWORD}
+    lettuce:
+      pool:
+        max-active: 10
+        max-idle: 10
+        min-idle: 2
+        max-wait: 30
+    database: 1
+  datasource:
+    platform: mariadb
+    # url: jdbc:mariadb://mariadb-url:3306/database
+    url: jdbc:mariadb://factory-zdb-parkingsk-maria-mariadb.factory-zdb:3306/parkingsk
+    username: ${MARIADB_USER}
+    password: ${MARIADB_PASSWORD}
+    driver-class-name: org.mariadb.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    database: mysql
+    # generate-ddl: true
+#  cache:
+#    type: redis
+#  session:
+#    store-type: redis
+#    redis:
+#      flush-mode: on_save
+#      save-mode: always
+  kafka:
+    bootstrap-servers: factory-zdb-parkingsk-stream-kafka-0.factory-zdb-parkingsk-stream-kafka-headless.factory-zdb.svc.cluster.local:9092
+
+management:
+  port: 8091
+  health:
+    rabbit:
+      enabled: false
+  endpoint:
+    restart:
+      enabled: true
+    shutdown:
+      enabled: true
+  endpoints:
+    web:
+      base-path: "/actuator"
+      exposure:
+        include : "info,health,prometheus,env,configprops" 

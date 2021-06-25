@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: parkingsk-bff
+  sleuth:
+    trace-id128: true
+    enabled: true
+    http:
+      enabled: true
+    log:
+      slf4j:
+        enabled: true
+    sampler:
+      probability: 1.0    # Open Zipkin 으로 데이터를 전송하는 트랜잭션 샘플링 비율
+  zipkin:
+    base-url: http://parkingsk-zipkin:9411
+
+domain:
+  group: parkingsk
+  name: bff
+api:
+  bff:
+    url: http://parkingsk-bff-app-v1-dev:8080
+  booking:
+    url: http://parkingsk-booking-app-v1-dev:8080
+  member:
+    url: http://parkingsk-member-app-v1-dev:8080
+  parkinglot:
+    url: http://parkingsk-parkinglot-app-v1-dev:8080
+  review:
+    url: http://parkingsk-review-app-v1-dev:8080

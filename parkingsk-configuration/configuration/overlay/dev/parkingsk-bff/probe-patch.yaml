@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+spec:
+  template:
+    spec:
+      containers:
+      - livenessProbe:
+          command: null
+          httpGet:
+            path: /actuator/health
+            port: 8091
+        name: app
+        readinessProbe:
+          command: null
+          httpGet:
+            path: /actuator/health
+            port: 8091

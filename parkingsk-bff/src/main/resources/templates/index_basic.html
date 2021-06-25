@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thymeleaf3</title>   
+    <!-- services 라이브러리 불러오기 --> 
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=APIKEY&libraries=LIBRARY"></script>
+	<!-- services와 clusterer, drawing 라이브러리 불러오기 -->
+	<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=APIKEY&libraries=services,clusterer,drawing"></script>
+    
+</head>
+<body>
+    <h1 th:text="${greeting}">Map Test Page</h1>
+    <div id="map" style="width:500px;height:400px;"></div>
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=fc98674be511ad4797ae666f9d5ffef3"></script>
+    <script>
+     	var container = document.getElementById('map'); 
+		var options = { 
+			center: new kakao.maps.LatLng(33.450701, 126.570667), 
+			level: 3 
+		};
+		
+		var map = new kakao.maps.Map(container, options); 
+    </script>
+    
+</body>
+</html>

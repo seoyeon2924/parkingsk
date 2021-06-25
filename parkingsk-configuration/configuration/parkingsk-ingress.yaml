@@ -1,0 +1,20 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: public-nginx
+  name: parkingsk-ingress
+  namespace: parkingsk
+spec:
+  rules:
+  - host: parkingsk.factory-dev.cloudzcp.com
+    http:
+      paths:
+      - backend:
+          serviceName: parkingsk-bff-app-v1-dev
+          servicePort: 8080
+        path: /
+      # - backend:
+      #     serviceName: parkingsk-account-app-v1-dev
+      #     servicePort: 8080
+      #   path: /account

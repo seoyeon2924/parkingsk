@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - statefulset.yaml
+  - service.yaml
+configMapGenerator:
+  - name: app-config
+    files:
+    - ../common/application.yaml
+# patches:
+#   - path: ../common/active-profile-patch.yaml
+#     target:
+#       kind: StatefulSet

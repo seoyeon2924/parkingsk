@@ -1,0 +1,53 @@
+@Library('retort-lib') _
+def label = "jenkins-${UUID.randomUUID().toString()}"
+
+// Kubernetes의 Service Account명
+def ZCP_USERID='parkingsk00'
+def K8S_NAMESPACE='parkingsk'
+def DOCKER_PROJECT='parkingsk'
+def DOCKER_IMAGE="${DOCKER_PROJECT}/parkingsk-member"
+def DOCKER_VERSION="latest"
+
+def repo
+
+timestamps {
+    podTemplate(label:label,
+        serviceAccount: "zcp-system-sa-${ZCP_USERID}",
+        containers: [
+            containerTemplate(name: 'maven', image: 'maven:3.6.3-jdk-11-slim', ttyEnabled: true, command: 'cat'),
+            containerTemplate(name: 'docker', image: 'docker:17-dind', ttyEnabled: true, command: 'dockerd-entrypoint.sh', privileged: true),
+            containerTemplate(name: 'tools', image: 'argoproj/argo-cd-ci-builder:v1.0.0', command: 'cat', ttyEnabled: true),
+            containerTemplate(name: 'kubectl', image: 'lachlanevenson/k8s-kubectl:v1.18.2', ttyEnabled: true, command: 'cat'),
+            containerTemplate(name: 'kustomize', image: 'gauravgaglani/k8s-kustomize:1.1.0', ttyEnabled: true, command: 'cat')
+        ],
+        volumes: [
+            persistentVolumeClaim(mountPath: '/root/.m2', claimName: 'zcp-jenkins-mvn-repo')
+        ]) {
+    
+        node(label) {
+            stage('SOURCE CHECKOUT') {
+                repo = checkout scm
+            }
+
+            stage('CHECKOUT') {
+                container('tools') {
+                    echo '개발소스쪽 Git Repo로 Checkout'
+                    sh 'git checkout origin1/master'
+                }
+            }
+    
+            stage('BUILD') {
+                container('maven') {
+                    mavenBuild goal: 'clean package -DskipTests=true -f pom.xml', systemProperties:['maven.repo.local':"/root/.m2/${JOB_NAME}"]
+                }
+            }
+    
+            stage('BUILD DOCKER IMAGE') {
+                container('docker') {
+                    dockerCmd.build tag: "${HARBOR_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_VERSION}"
+                    dockerCmd.push registry: HARBOR_REGISTRY, imageName: DOCKER_IMAGE, imageVersion: DOCKER_VERSION, credentialsId: "HARBOR_CREDENTIALS"
+                }
+            }
+        }
+    }
+}

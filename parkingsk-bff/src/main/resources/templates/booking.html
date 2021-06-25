@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>SK주자장 찾기 </title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- Custom fonts for this template-->
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+    
+    <!-- Custom styles for this page -->
+    <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+    
+    <style>
+.map_wrap, .map_wrap * {margin:0;padding:0;font-family:'Malgun Gothic',dotum,'돋움',sans-serif;font-size:12px;}
+.map_wrap a, .map_wrap a:hover, .map_wrap a:active{color:#000;text-decoration: none;}
+.map_wrap {position:relative;width:100%;height:500px;}
+#menu_wrap {position:absolute;top:0;left:0;bottom:0;width:250px;margin:10px 0 30px 10px;padding:5px;overflow-y:auto;background:rgba(255, 255, 255, 0.7);z-index: 1;font-size:12px;border-radius: 10px;}
+.bg_white {background:#fff;}
+#menu_wrap hr {display: block; height: 1px;border: 0; border-top: 2px solid #5F5F5F;margin:3px 0;}
+#menu_wrap .option{text-align: center;}
+#menu_wrap .option p {margin:10px 0;}  
+#menu_wrap .option button {margin-left:5px;}
+#placesList li {list-style: none;}
+#placesList .item {position:relative;border-bottom:1px solid #888;overflow: hidden;cursor: pointer;min-height: 65px;}
+#placesList .item span {display: block;margin-top:4px;}
+#placesList .item h5, #placesList .item .info {text-overflow: ellipsis;overflow: hidden;white-space: nowrap;}
+#placesList .item .info{padding:10px 0 10px 55px;}
+#placesList .info .gray {color:#8a8a8a;}
+#placesList .info .jibun {padding-left:26px;background:url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/places_jibun.png) no-repeat;}
+#placesList .info .tel {color:#009900;}
+#placesList .item .markerbg {float:left;position:absolute;width:36px; height:37px;margin:10px 0 0 10px;background:url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_blue.png) no-repeat;}
+#placesList .item .marker_1 {background-position: 0 -10px;}
+#placesList .item .marker_2 {background-position: 0 -56px;}
+#placesList .item .marker_3 {background-position: 0 -102px}
+#placesList .item .marker_4 {background-position: 0 -148px;}
+#placesList .item .marker_5 {background-position: 0 -194px;}
+#placesList .item .marker_6 {background-position: 0 -240px;}
+#placesList .item .marker_7 {background-position: 0 -286px;}
+#placesList .item .marker_8 {background-position: 0 -332px;}
+#placesList .item .marker_9 {background-position: 0 -378px;}
+#placesList .item .marker_10 {background-position: 0 -423px;}
+#placesList .item .marker_11 {background-position: 0 -470px;}
+#placesList .item .marker_12 {background-position: 0 -516px;}
+#placesList .item .marker_13 {background-position: 0 -562px;}
+#placesList .item .marker_14 {background-position: 0 -608px;}
+#placesList .item .marker_15 {background-position: 0 -654px;}
+#pagination {margin:10px auto;text-align: center;}
+#pagination a {display:inline-block;margin-right:10px;}
+#pagination .on {font-weight: bold; cursor: default;color:#777;}
+</style>
+</head>
+<body class="bg-gradient-primary">
+<!-- Page Wrapper -->
+<div id="wrapper">
+
+	<!-- Content Wrapper -->
+	<div id="content-wrapper" class="d-flex flex-column">
+
+		<!-- Main Content -->
+		<div id="content">
+
+			<!-- Topbar -->
+			<nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+	
+				<!-- Topbar Navbar -->
+				<ul class="navbar-nav ml-auto">
+
+					<!-- Nav Item - Search Dropdown (Visible Only XS) -->
+					<li class="nav-item dropdown no-arrow d-sm-none">
+						<a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button"
+						   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<i class="fas fa-search fa-fw"></i>
+						</a>
+						<!-- Dropdown - Messages -->
+						<div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
+						     aria-labelledby="searchDropdown">
+							<form class="form-inline mr-auto w-100 navbar-search">
+								<div class="input-group">
+									<input type="text" class="form-control bg-light border-0 small"
+									       placeholder="Search for..." aria-label="Search"
+									       aria-describedby="basic-addon2">
+									<div class="input-group-append">
+										<button class="btn btn-primary" type="button">
+											<i class="fas fa-search fa-sm"></i>
+										</button>
+									</div>
+								</div>
+							</form>
+						</div>
+					</li>
+			
+
+					<!-- Nav Item - Messages -->
+					<li class="nav-item dropdown no-arrow mx-1" onclick="goMypage()" >
+						<a class="nav-link dropdown-toggle" href="/mypage" id="messagesDropdown" role="button"
+						   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<i class="fas fa-envelope fa-fw"></i>
+							<!-- Counter - Messages -->
+							<span class="badge badge-danger badge-counter"></span>
+						</a>						
+					</li>
+
+					<div class="topbar-divider d-none d-sm-block"></div>
+
+					<!-- Nav Item - User Information -->
+					<li class="nav-item dropdown no-arrow">
+						<a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+						   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<span class="mr-2 d-none d-lg-inline text-gray-600 small">안서연</span>
+							<img class="img-profile rounded-circle"
+							     src="img/undraw_profile.svg">
+						</a>
+						<!-- Dropdown - User Information -->
+						<div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+						     aria-labelledby="userDropdown">
+							<a class="dropdown-item" href="#">
+								<i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+								Profile
+							</a>
+							<a class="dropdown-item" href="#">
+								<i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+								Settings
+							</a>
+							<a class="dropdown-item" href="#">
+								<i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+								Activity Log
+							</a>
+							<div class="dropdown-divider"></div>
+							<a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+								<i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+								Logout
+							</a>
+						</div>
+					</li>
+
+				</ul>
+
+			</nav>
+			<!-- End of Topbar -->
+		</div>
+	</div>
+</div>
+			
+<div class="map_wrap">
+    <div id="map" style="width:100%;height:100%;position:relative;overflow:hidden;"></div>
+
+    <div id="menu_wrap" class="bg_white">
+        <div class="option">
+            <div>
+                <form onsubmit="searchPlaces(); return false;">
+                    목적지 : <input type="text" value="청계천" id="keyword" size="15"> 
+                    <button type="submit">검색하기</button> 
+                </form>
+            </div>
+        </div>
+        <hr>
+        <ul id="placesList"></ul>
+        <div id="pagination"></div>
+    </div>
+</div>
+
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=fc98674be511ad4797ae666f9d5ffef3&libraries=services"></script>
+<script>
+	var latlong;
+	var lati;
+	var longi;
+		
+	var mapContainer = document.getElementById('map'), // 지도를 표시할 div  
+    	mapOption = { 
+        center: new kakao.maps.LatLng(37.5605, 126.98466), // 지도의 중심좌표
+        level: 8 // 지도의 확대 레벨
+    };
+	
+	var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+	
+	var positionsPark = [
+		{
+	        title: 'SKC&C 판교A동주차장', 
+	        latlng: new kakao.maps.LatLng(37.40590, 127.09842)
+	    },
+	    {
+	        title: 'SKC&C 판교B동주차장', 
+	        latlng: new kakao.maps.LatLng(37.405793, 127.099860)
+	    },
+	    {
+	        title: 'SK건설 수송타워주차장', 
+	        latlng: new kakao.maps.LatLng(37.57467, 126.98079)
+	    },
+	    {
+	        title: 'SK증권 여의도빌딩 주차장', 
+	        latlng: new kakao.maps.LatLng(37.522054, 126.9277397)
+	    },
+	    {
+	        title: 'SK-u타워', 
+	        latlng: new kakao.maps.LatLng(37.366300, 127.106600)
+	    },
+	    {
+	        title: 'SK-T타워', 
+	        latlng: new kakao.maps.LatLng(37.5664, 126.9850)
+	    },
+	    {
+	        title: 'SK남산빌딩', 
+	        latlng: new kakao.maps.LatLng(37.5567, 126.9759)
+	    },
+	    {
+	        title: 'SK서린빌딩',
+	        latlng: new kakao.maps.LatLng(37.5697, 126.9802)
+	    }	
+	    
+	  ];
+	  
+	 var imageSrcPark = "../img/icon_parking.png";  // 마커 이미지의 이미지 크기 입니다
+	 var imageSizePark = new kakao.maps.Size(35, 35); 	// 마커 이미지를 생성합니다    
+	 var markerImagePark = new kakao.maps.MarkerImage(imageSrcPark, imageSizePark); 	   
+	    
+	 for (var i = 0; i < positionsPark.length; i ++) {	    
+ 
+	    // 마커를 생성합니다
+	    var marker_park = new kakao.maps.Marker({
+	        map: map, // 마커를 표시할 지도
+	        position: positionsPark[i].latlng, // 마커를 표시할 위치
+	        title : positionsPark[i].title, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
+	        image : markerImagePark, // 마커 이미지 
+	        clickable: true //지도 클릭안되게 
+	    });
+	    
+	    //마지막 객체만 실행
+	    kakao.maps.event.addListener(marker_park, 'click', function() {
+	    	//alert('test');
+	    	//lot_name.value = positions[i].title
+	    	 
+	    	//lot_name.value = "SK서린"
+	    	lot_name.value = positionsPark[0].title;
+	    	
+	    });	    
+	}//end for
+	// 마커가 지도 위에 표시되도록 설정합니다
+	//marker_park.setMap(map);	
+	//marker_park.setMap(null);    
+
+	//검색 추가
+	// 마커를 담을 배열입니다
+	var markers = [];
+	
+	// 장소 검색 객체를 생성합니다
+	var ps = new kakao.maps.services.Places();  
+	
+	// 검색 결과 목록이나 마커를 클릭했을 때 장소명을 표출할 인포윈도우를 생성합니다
+	var infowindow = new kakao.maps.InfoWindow({zIndex:1});
+	
+	// 키워드로 장소를 검색합니다
+	searchPlaces();
+	
+	// 키워드 검색을 요청하는 함수입니다
+	function searchPlaces() {
+	
+	    var keyword = document.getElementById('keyword').value;
+	
+	    if (!keyword.replace(/^\s+|\s+$/g, '')) {
+	        alert('키워드를 입력해주세요!');
+	        return false;
+	    }
+	
+	    // 장소검색 객체를 통해 키워드로 장소검색을 요청합니다
+	    ps.keywordSearch( keyword, placesSearchCB); 
+	}
+	
+	// 장소검색이 완료됐을 때 호출되는 콜백함수 입니다
+	function placesSearchCB(data, status, pagination) {
+	    if (status === kakao.maps.services.Status.OK) {
+	
+	        // 정상적으로 검색이 완료됐으면
+	        // 검색 목록과 마커를 표출합니다
+	        displayPlaces(data);
+	
+	        // 페이지 번호를 표출합니다
+	        displayPagination(pagination);
+	
+	    } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
+	
+	        alert('검색 결과가 존재하지 않습니다.');
+	        return;
+	
+	    } else if (status === kakao.maps.services.Status.ERROR) {
+	
+	        alert('검색 결과 중 오류가 발생했습니다.');
+	        return;
+	
+	    }
+	}
+	
+	// 검색 결과 목록과 마커를 표출하는 함수입니다
+	function displayPlaces(places) {
+	
+	    var listEl = document.getElementById('placesList'), 
+	    menuEl = document.getElementById('menu_wrap'),
+	    fragment = document.createDocumentFragment(), 
+	    bounds = new kakao.maps.LatLngBounds(), 
+	    listStr = '';
+	    
+	    // 검색 결과 목록에 추가된 항목들을 제거합니다
+	    removeAllChildNods(listEl);
+	
+	    // 지도에 표시되고 있는 마커를 제거합니다
+	    removeMarker();
+	    
+	    for ( var i=0; i<places.length; i++ ) {
+	
+	        // 마커를 생성하고 지도에 표시합니다
+	        var placePosition = new kakao.maps.LatLng(places[i].y, places[i].x),
+	            marker = addMarker(placePosition, i), 
+	            itemEl = getListItem(i, places[i]); // 검색 결과 항목 Element를 생성합니다
+	
+	        // 검색된 장소 위치를 기준으로 지도 범위를 재설정하기위해
+	        // LatLngBounds 객체에 좌표를 추가합니다
+	        bounds.extend(placePosition);
+	
+	        // 마커와 검색결과 항목에 mouseover 했을때
+	        // 해당 장소에 인포윈도우에 장소명을 표시합니다
+	        // mouseout 했을 때는 인포윈도우를 닫습니다
+	        (function(marker, title) {
+	            kakao.maps.event.addListener(marker, 'mouseover', function() {
+	              
+	                displayInfowindow(marker, title);
+	                
+	            });
+	
+	            kakao.maps.event.addListener(marker, 'mouseout', function() {
+	                infowindow.close();
+	            });
+	
+	            itemEl.onmouseover =  function () {
+	                displayInfowindow(marker, title);
+	            };
+	
+	            itemEl.onmouseout =  function () {
+	                infowindow.close();
+	            };
+	            
+	            itemEl.onmousedown =  function () {
+	                //********** 아니템 선택시 해당 위치로 이동
+					map.panTo(marker.getPosition());
+					latlong = marker.getPosition();
+					lati = latlong.getLat();
+					longi = latlong.getLng();
+					// 주차장 목록에 좌표 전달
+					//getLat(), getLng
+					//alert(lati +"!!! 가까운 주차장으로 정렬" + longi);
+	            };
+	            
+	        })(marker, places[i].place_name);
+	
+	        fragment.appendChild(itemEl);
+	    }
+	
+	    // 검색결과 항목들을 검색결과 목록 Elemnet에 추가합니다
+	    listEl.appendChild(fragment);
+	    menuEl.scrollTop = 0;
+	
+	    // 검색된 장소 위치를 기준으로 지도 범위를 재설정합니다
+	    map.setBounds(bounds);
+	}
+	
+	// 검색결과 항목을 Element로 반환하는 함수입니다
+	function getListItem(index, places) {
+	
+	    var el = document.createElement('li'),
+	    itemStr = '<span class="markerbg marker_' + (index+1) + '"></span>' +
+	                '<div class="info">' +
+	                '   <h5>' + places.place_name + '</h5>';
+	
+	    if (places.road_address_name) {
+	        itemStr += '    <span>' + places.road_address_name + '</span>' +
+	                    '   <span class="jibun gray">' +  places.address_name  + '</span>';
+	    } else {
+	        itemStr += '    <span>' +  places.address_name  + '</span>'; 
+	    }
+	                 
+	      itemStr += '  <span class="tel">' + places.phone  + '</span>' +
+	                '</div>';           
+	
+	    el.innerHTML = itemStr;
+	    el.className = 'item';
+	
+	    return el;
+	}
+	
+	// 마커를 생성하고 지도 위에 마커를 표시하는 함수입니다
+	function addMarker(position, idx, title) {
+	    var imageSrc = 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_blue.png', // 마커 이미지 url, 스프라이트 이미지를 씁니다
+	        imageSize = new kakao.maps.Size(36, 37),  // 마커 이미지의 크기
+	        imgOptions =  {
+	            spriteSize : new kakao.maps.Size(36, 691), // 스프라이트 이미지의 크기
+	            spriteOrigin : new kakao.maps.Point(0, (idx*46)+10), // 스프라이트 이미지 중 사용할 영역의 좌상단 좌표
+	            offset: new kakao.maps.Point(13, 37) // 마커 좌표에 일치시킬 이미지 내에서의 좌표
+	        },
+	        markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imgOptions),
+	            marker = new kakao.maps.Marker({
+	            position: position, // 마커의 위치
+	            image: markerImage 
+	        });
+	
+	    marker.setMap(map); // 지도 위에 마커를 표출합니다
+	    markers.push(marker);  // 배열에 생성된 마커를 추가합니다
+	
+	    return marker;
+	}
+	
+	// 지도 위에 표시되고 있는 마커를 모두 제거합니다
+	function removeMarker() {
+	    for ( var i = 0; i < markers.length; i++ ) {
+	        markers[i].setMap(null);
+	    }   
+	    markers = [];
+	}
+	
+	// 검색결과 목록 하단에 페이지번호를 표시는 함수입니다
+	function displayPagination(pagination) {
+	    var paginationEl = document.getElementById('pagination'),
+	        fragment = document.createDocumentFragment(),
+	        i; 
+	
+	    // 기존에 추가된 페이지번호를 삭제합니다
+	    while (paginationEl.hasChildNodes()) {
+	        paginationEl.removeChild (paginationEl.lastChild);
+	    }
+	
+	    for (i=1; i<=pagination.last; i++) {
+	        var el = document.createElement('a');
+	        el.href = "#";
+	        el.innerHTML = i;
+	
+	        if (i===pagination.current) {
+	            el.className = 'on';
+	        } else {
+	            el.onclick = (function(i) {
+	                return function() {
+	                    pagination.gotoPage(i);
+	                }
+	            })(i);
+	        }
+	
+	        fragment.appendChild(el);
+	    }
+	    paginationEl.appendChild(fragment);
+	}
+	
+	// 검색결과 목록 또는 마커를 클릭했을 때 호출되는 함수입니다
+	// 인포윈도우에 장소명을 표시합니다
+	function displayInfowindow(marker, title) {
+	    var content = '<div style="padding:5px;z-index:1;">' + title + '</div>';	
+       
+		
+	    infowindow.setContent(content);
+	    infowindow.open(map, marker); 
+	    
+	    
+	    
+	}
+	
+	 // 검색결과 목록의 자식 Element를 제거하는 함수입니다
+	function removeAllChildNods(el) {   
+	    while (el.hasChildNodes()) {
+	        el.removeChild (el.lastChild);
+	    }
+	}
+	
+	function goMypage() {
+		location.href = "/mypage";
+	}
+	
+       
+
+</script>
+<script src="js/booking/register.js"></script>
+
+
+ <div id="booking" class="card o-hidden border-0 shadow-lg my-1">
+            <div class="card-body p-0">
+                <!-- Nested Row within Card Body -->
+                <div class="row">
+
+                    <div class="col-lg-7">
+                        <div class="p-5">
+                            <div class="text-center">
+                                <h1 class="h4 text-gray-900 mb-4">가까운 SK 주차창 찾기  
+                                 <button class="btn btn-primary" type="button">
+	                                   <i class="fas fa-search fa-sm"></i>
+	                             </button>
+	                             </h1>                            
+                            </div>
+                            
+                            <!-- Begin Page Content -->
+				            <div class="container-fluid">
+				                <!-- Begin Page Content -->
+				                <!-- Content Row -->
+				                <div class="row" id="testkey">
+				                </div>
+				            </div>
+				            <!-- /.container-fluid -->
+               				 
+                            <div class="p-5" id="list" visable="false">
+                            <form class="parkinglot" action="/register" method="post" >
+                                <div class="form-group">
+                                	
+                                	<input  type="hidden" class="form-control form-control-user" id="bookerId" value="seoyeon2924" >
+                                	<input  type="hidden" class="form-control form-control-user" id="bookerName" value="안서연" >                                	
+                                	<input  type="hidden" class="form-control form-control-user" id="parkingLotId" value="1" >
+                                    <input  type="text" class="form-control form-control-user" id="parkingLotName" placeholder="주차장명" readonly>
+                                    <input  type="text" class="form-control form-control-user" id="address" placeholder="주소" readonly>
+                                    <hr>                                                                        
+                                    <input type="text" class="form-control form-control-user" id="capacity" placeholder="주차공간" readonly>
+                                    <hr>
+                                    <input type="text" class="form-control form-control-user" id="openTime" placeholder="오픈시간" readonly>
+                                    <hr>
+                                    <input type="text" class="form-control form-control-user" id="endTime" placeholder="종료시간" readonly>
+                                    <hr>
+                                    <input type="text" class="form-control form-control-user" id="bookCarNo" placeholder="자동차번호">
+                                    <hr>
+                                    <input type="text" class="form-control form-control-user" id="bookdate" placeholder="예약일, 예)20210611" >
+                                </div>
+                                <hr>
+                                <a href="#" class="btn btn-google btn-user btn-block">
+                                    <i class="fab fa-google fa-fw"></i> 예약하기
+                                </a>
+                            </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        
+    <!-- Bootstrap core JavaScript-->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="js/sb-admin-2.min.js"></script>
+    <script src="js/booking/register.js"></script>
+    <script src="js/booking/list.js"></script>
+    
+</body>
+</html>

@@ -1,0 +1,121 @@
+@Library('retort-lib') _
+def label = "jenkins-${UUID.randomUUID().toString()}"
+
+// Kubernetes의 Service Account명
+def ZCP_USERID='parkingsk00'
+def K8S_NAMESPACE='parkingsk'
+def DOCKER_PROJECT='parkingsk'
+def DOCKER_IMAGE="${DOCKER_PROJECT}/parkingsk-member"
+def DOCKER_VERSION="${BUILD_NUMBER}"
+def DEPLOY_YAME="deploy-${BUILD_NUMBER}"
+def DEPLOY_PATH='overlay/dev/parkingsk-member'
+def CD_URL='factory-git.cloudzcp.io/parkingsk/parkingsk-configuration.git'
+def DEPLOYMENT='parkingsk-member-app-v1-dev'
+def repo
+
+timestamps {
+    podTemplate(label:label,
+        serviceAccount: "zcp-system-sa-${ZCP_USERID}",
+        containers: [
+            containerTemplate(name: 'maven', image: 'maven:3.6.3-jdk-11-slim', ttyEnabled: true, command: 'cat'),
+            containerTemplate(name: 'docker', image: 'docker:17-dind', ttyEnabled: true, command: 'dockerd-entrypoint.sh', privileged: true),
+            containerTemplate(name: 'tools', image: 'argoproj/argo-cd-ci-builder:v1.0.0', command: 'cat', ttyEnabled: true),
+            containerTemplate(name: 'kubectl', image: 'lachlanevenson/k8s-kubectl:v1.18.2', ttyEnabled: true, command: 'cat'),
+            containerTemplate(name: 'kustomize', image: 'gauravgaglani/k8s-kustomize:1.1.0', ttyEnabled: true, command: 'cat')
+        ],
+        volumes: [
+            persistentVolumeClaim(mountPath: '/root/.m2', claimName: 'zcp-jenkins-mvn-repo')
+        ]) {
+    
+        node(label) {
+            stage('SOURCE CHECKOUT') {
+                repo = checkout scm
+            }
+
+            stage('CHECKOUT') {
+                container('tools') {
+                    echo '개발소스쪽 Git Repo로 Checkout'
+                    sh 'git checkout origin1/master'
+                }
+            }
+    
+            stage('BUILD') {
+                container('maven') {
+                    mavenBuild goal: 'clean package -DskipTests=true -s settings.xml -f pom.xml', systemProperties:['maven.repo.local':"/root/.m2/${JOB_NAME}"]
+                }
+            }
+    
+            stage('BUILD DOCKER IMAGE') {
+                container('docker') {
+                    dockerCmd.build tag: "${HARBOR_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_VERSION}"
+                    dockerCmd.push registry: HARBOR_REGISTRY, imageName: DOCKER_IMAGE, imageVersion: DOCKER_VERSION, credentialsId: "HARBOR_CREDENTIALS"
+                }
+            }
+
+    
+            dir("${DEPLOY_PATH}") {
+                stage('Deploy to dev') {
+                    withCredentials([usernamePassword(credentialsId: 'GIT_CREDENTIALS', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PWD')]) {
+                        container('tools') {
+                            sh "git checkout origin/master"
+                            sh "git config remote.origin.url https://${GIT_USER}:${GIT_PWD}@${repo.GIT_URL_1}"
+                            sh "git config --global user.email '${GIT_MAIL}'"
+                            sh "git config --global user.name '${GIT_USER}'"
+                            sh "kustomize edit set image ${HARBOR_REGISTRY}/${DOCKER_PROJECT}/microservice=${HARBOR_REGISTRY}/${DOCKER_IMAGE}:${DOCKER_VERSION}"
+
+                            echo "git pull origin HEAD:master && git add . && git commit -am 'Publish new version ${DOCKER_VERSION} to dev'; git push origin HEAD:master"
+                            waitUntil {
+                                try {
+                                    sh "git pull origin HEAD:master && git add . && git commit -am 'Publish new version ${DOCKER_VERSION} to dev'; git push origin HEAD:master"
+                                    true
+                                } catch(error) {
+                                    input "Retry the job?"
+                                    sh "git reset --mixed HEAD^"
+                                    false
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            stage('BUILD K8S YAML') {
+                container('kustomize') {
+                    sh "kustomize build --load_restrictor none ${DEPLOY_PATH} > ${DEPLOY_PATH}/${DEPLOY_YAME}"
+                    echo 'Kubernetes 배포 yaml 생성 내역'
+                    sh "cat ${DEPLOY_PATH}/${DEPLOY_YAME}"
+                }
+            }
+
+            stage('DEPLOY') {
+                container('kubectl') {
+                    kubeCmd.apply file: "${DEPLOY_PATH}/${DEPLOY_YAME}", wait: 300, recoverOnFail: false, namespace: K8S_NAMESPACE
+                    sh "kubectl rollout restart deployment ${DEPLOYMENT} -n ${K8S_NAMESPACE} "
+                }
+            }
+
+            stage('JMETER') {
+                withCredentials([usernamePassword(credentialsId: 'GIT_CREDENTIALS', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PWD')]) {
+                    container('jmeter') {
+                        sh "git checkout origin/master"
+                        sh "git config remote.origin.url https://${GIT_USER}:${GIT_PWD}@${CD_URL}"
+                        sh "git config --global user.email '${GIT_USER}@sk.com'"
+                        sh "git config --global user.name '${GIT_USER}'"
+
+                    	//echo 'jmeter JVM 옵션 실행'
+						//sh '''export JVM_ARGS="-Xms1G -Xmx1G -XMaxMetaspaceSize = 256m"
+						//env''';                    	
+                        echo 'jmeter 명령어 실행'
+                        //sh '/usr/local/jmeter/apache-jmeter-5.4.1/bin/jmeter.sh -n -f -t jenkins/dev/product/jmeter-pipeline/JPetstore.jmx -l jenkins/dev/product/jmeter-pipeline/Result_${BUILD_NUMBER}.log -e -o jenkins/dev/product/jmeter-pipeline/result_html_${BUILD_NUMBER}'
+                        sh '''JVM_ARGS="-Xms1G -Xmx1G" && export JVM_ARGS && /usr/local/jmeter/apache-jmeter-5.4.1/bin/jmeter.sh -n -f -t jenkins/dev/product/jmeter-pipeline/JPetstore.jmx -l jenkins/dev/product/jmeter-pipeline/Result_${BUILD_NUMBER}.log -e -o jenkins/dev/product/jmeter-pipeline/result_html_${BUILD_NUMBER}'''
+                        echo 'jtl 파일은 삭제하고 html결과파일만 남김'
+                        //sh 'rm -rf jenkins/dev/product/jmeter-pipeline/test.jtl'
+                        sh 'mv jmeter.log jenkins/dev/product/jmeter-pipeline/result_html_${BUILD_NUMBER}/jmeter.log'
+                        echo 'jmeter 결과물을 git에 push'
+                        sh "git add . && git commit -am 'Publish Jmeter result' && git push origin HEAD:master"
+                    }
+                }
+            }
+        }
+    }
+}

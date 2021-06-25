@@ -1,0 +1,31 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../common/deployment
+namePrefix: parkingsk-bff-
+# nameSuffix: -dev
+commonLabels:
+  project: parkingsk
+  microservice: parkingsk-bff
+configMapGenerator:
+  - name: app-config
+    behavior: merge
+    files:
+      - application-custom.yaml
+images:
+  - name: app
+    newName: factory-registry.cloudzcp.io/parkingsk/parkingsk-bff
+    newTag: latest
+patchesStrategicMerge:
+  - replicas-patch.yaml
+  - imagepolicy-patch.yaml
+  # - probe-patch.yaml
+  - spec-patch.yaml
+  # - pod-lifecycle-patch.yaml
+  # - metric-patch.yaml
+patchesJson6902:
+  - target:
+      version: v1
+      kind: Service
+      name: app
+    path: service-patch.yaml

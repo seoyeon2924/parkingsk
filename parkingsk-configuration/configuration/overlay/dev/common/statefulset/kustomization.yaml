@@ -1,0 +1,51 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../../../base/statefulset
+  - ../resource/role.yaml # SA for dev environment
+  - ../resource/sa.yaml
+  - ../resource/secret.yaml
+commonLabels:
+  cluster-tier: dev
+nameSuffix: -v1-dev
+configMapGenerator:
+  - name: app-config
+    behavior: merge
+    files:
+      - ../resource/application-common.yaml
+patches:
+  - path: ../resource/spec-patch.yaml
+    target:
+      group: apps
+      version: v1
+      name: app
+  - path: ../resource/metric-patch.yaml
+    target:
+      group: apps
+      version: v1
+      name: app
+  - path: ../resource/management-port-patch.yaml
+    target:
+      group: apps
+      version: v1
+      name: app
+  - path: ../resource/probe-patch.yaml
+    target:
+      group: apps
+      version: v1
+      name: app
+  - path: ../resource/lifecycle-patch.yaml
+    target:
+      group: apps
+      version: v1
+      name: app
+  - path: ../resource/backend-cred-patch.yaml
+    target:
+      group: apps
+      version: v1
+      name: app
+  - path: ../resource/configmap-reader-patch.yaml
+    target:
+      group: apps
+      version: v1
+      name: app
